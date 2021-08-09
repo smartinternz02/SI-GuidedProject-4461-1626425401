@@ -1,0 +1,243 @@
+Polynomial Multiplication and Fast Fourier ‘Transform
+
+(Com S 477/577 Notes)
+
+Yan-Bin Jia
+
+Sep 17, 2020
+
+In this lecture we will describe the famous algorithm of fast Fourier transform (FFT), which
+has revolutionized digital signal processing and in many ways changed our life. It was listed by the
+Science magazine as one of the ten greatest algorithms in the 20th century. Here we will learn FFT
+in the context of polynomial multiplication, and later on into the semester reveal its connection to
+Fourier transform.
+
+Suppose we are given two polynomials:
+
+p(x) = aotrayt+te:++ ana",
+
+q(x) = bo tbyat+-+++ bya".
+
+Their product is defined by
+
+p(x) - q(x) = co Heya +++ + Con_20?”?
+where
+a » andj kmax{0,i—(n—1)}<k<min{i,n—1}
+
+In computing the product polynomial, every a; is multiplied with every 6;, for 0 <7,7 <n—J1. So
+there are at most n? multiplications, given that some of the coefficients may be zero. Obtaining
+every c; involves one fewer additions than multiplications. So there are at most n?—2n-+1 additions
+involved. In short, the number of arithmetic operations is O(n”). This is hardly efficient.
+
+But can we obtain the product more efficiently? The answer is yes, by the use of a well-known
+method called fast Fourier transform, or simply, FFT.
+
+ 
+
+1 Discrete Fourier Transform
+
+Let us start with introducing the discrete Fourier transform (DFT) problem. Denote by w, an nth
+
+complex root of 1, that is, w, =e’ , where i? = —1. DFT is the mapping between two vectors:
+ag ao
+ay . ay
+a = +-—_> a=
+An—1 An—1
+such that
+
+n—1
+
+“nw ke °
+
+a;=) ap”, 7=0,...,n—-—1.
+k=0
+
+It can also be written as a matrix equation:
+
+1 1 1 1 ao Go
+2 —l nw
+1 Wy, we Wr ay ay
+_ 2(n—1 —1}? a
+1 wrt wl” ere wh” ) An—1 An—1
+
+The matrix above is a Vandermonde matrix and denoted by Vp.
+Essentially, DF'T evaluates the polynomial
+
+p(x) =agtaye+er.+ Gm"
+
+at_ nm points w2,wt,...,w?-!; in other words, 4, = p(w”) for 0 < k <n—1. From now on we
+
+assume that n is a power of 2. If not, we can always add in higher order terms with zero coefficients
+
+An = Anti = *** = Apfloggn]_, = 0. The powers of wy, are illustrated in the complex plane in the
+
+following figure.
+
+ 
+
+w, = l,
+wrth = uw,
+we = —l,
+er = —uk.
+It uses a divide-and-conquer strategy. More specifically, it divides p(x) into two polynomials po()
+and pi(x), both of degree $ — 1; namely,
+
+po(x) = agp tagr+---+ Anon? !,
+pi(t) = ay +agxt-+-+a,yx?!.
+Hence
+p(x) = po(a*) + xpi(x*). (1)
+In this way the problem of evaluating p(x) at w?,...,w"~! breaks down into two steps:
+
+1. evaluating po(x) and p(x) at (w2)?, (wh)?, ..., (wt),
+
+2. combining the resulting according to (1).
+
+Note that the list (w?)?, (w,)?, ..., (w"-1)? consists of only $ complex roots of unity, ie.,
+Ww? w2,...,w"*. So the subproblems of evaluating po(a) and p;(x) have exactly the same form as
+the original problem of evaluating p(x), only at half the size. This decomposition forms the basis
+
+for the recursive FFT algorithm presented below.
+
+RECURSIVE-DFT(a, 7)
+
+ 
+
+ 
+
+1 ifn=1
+
+2 then return a
+
+3 Wnt en
+
+4 wel
+
+5 a & (ao, a2,...,Gn—2)
+
+6 alll & (ay, a3,...,4n—1)
+
+7 @®! — Recursive-DFT(a", 2)
+8 al! — Recursive-DFT(al4), 2)
+9 fork=0to 5—1do
+
+10 a, — al + walt
+
+in anya — a) — wale
+
+12 W — WWy,
+
+13 return (Go, @1,..-,@n—1)
+
+To verify the correctness, we here understand line 11 in the procedure RECURSIVE-DF'T:
+| [1]
+
+. 0)
+
+At the kth iteration of the for loop of lines 9-12, w = w*. We have
+
+- [0] k (1
+
+~ [0 k+% ./1
+= Aly uht Fall
+
+k+3
+= py (ut) +08 Fp (uth)
+k+2
+_ po(wrk*") +0 pi (w2h*")
+k+3
+
+_ p(w ) from (1).
+
+3
+Let T(n) be the running time of RECURSIVE-DF'T. Steps 1-6 take time O(n). Steps 7 and 8
+each takes time T'(}). Steps 9-13 take time O(n). So we end up with the recurrence
+
+T(n) = 2T (=) + O(n),
+
+which has the solution
+T(n) = O(nlogyn).
+
+2 Inverse DET
+
+ 
+
+Suppose we need to compute the inverse Fourier transform given by
+a=V,'4.
+Namely, we would like to determine the coefficients of the polynomial p(a) = ag +--+ + @n_yx”"!
+
+given its values at w?,...,w"~t. Can we do it with the same efficiency, that is, in time O(n log n)?
+The answer is yes. To see why, note that the Vandermonde matrix V,, has inverse
+
+1 1 1 vee 1
+rs
+"on : 3 3
+1 wir) wi 2ir-2) _ uy
+To verify the above, make use of the equation a (wX)J = 0 for non-negative integer k not
+
+divisible by n.
+Based on the above observation, we can still apply RECURSIVE-DF'T by replacing a with a, a
+with a, wy, with w> (that is, w"~!), and scaling the result by 4.
+
+3 Fast Multiplication of Two Polynomials
+
+Let us now go back to the two polynomials at the beginning:
+
+p(x) = agtaya+---+ Oni"
+
+bop + bya +--+ + b, a" I.
+
+Q
+——~
+=
+Ne
+
+|
+
+Their product
+(p- q)(x) = p(x) - q(x) = cg + CU +++ + Cong?"
+
+can be computed by combining FFT with interpolation. The computation takes time O(n log n)
+and consists of the following three steps:
+
+1. Evaluate p(x) and q(x) at 2n points w$,,...,w5"~' using DFT. This step takes time O(n log n).
+2. Obtain the values of p(x)q(a) at these 2n points through pointwise multiplication
+
+(p - q) (wn) P(W an) * (Wn),
+(p q) (wn) ~~ P(W5p) q(w3n,);
+(p-q)(wort) = p(w3h*) - q(w5h*)
+
+This step takes time O(n).
+
+3. Interpolate the polynomial p-q at the product values using inverse DF'T to obtain coefficients
+Co, C1,---,C2n—2. This last step requires time O(n log n).
+
+We can also use FFT to compute the convolution of two vectors
+a = (do,---,Qn—1) and b = (bo,.--, bn_-1),
+
+which is defined as a vector c = (co,.--,€n—1) where
+
+j
+cj = >= anby—ns 7=0,...,n—1.
+k=0
+The running time is again O(n log n).
+
+4 History of FFT
+
+Modern FFT is widely credited to the paper [2] by Cooley and Tukey. But the algorithm had
+been discovered independently by a few individuals in the past. Only the appearance of digital
+computers and the wide application of signal processing made people realize the importance of fast
+computation of large Fourier series. An incomplete list of pioneers includes
+
+e Gauss (1805) — the earliest known origin of the FFT algorithm.
+e Runge and Konig (1924) — the doubling algorithm.
+e Danielson and Lanczos (1942) — divide-and-conquer on DFTs.
+
+e Rudnick (1960s) — the first computer program implementation with O(n log n) time.
+
+References
+
+[1] T. H. Cormen et al. Introduction to Algorithms. McGraw-Hill, Inc., 2nd edition, 2001.
+
+[2] J. W. Cooley and J. W. Tukey. An algorithm for the machine calculation of complex Fourier
+series. Mathematics of Computation, 19(90):297-301, 1965.
+
